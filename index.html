@@ -542,6 +542,52 @@
         </div>
       </div>
 
+
+      <hr class="divider">
+      <div class="panel-title">☀️ Solceller — egenanvändning</div>
+
+      <div class="checkwatt-box" style="background: linear-gradient(135deg, #FFFBEA 0%, #FFF3CC 100%); border-color: #F5D878;">
+        <div class="cw-header">
+          <div class="cw-label" style="color: #7A5200;">Har kunden solceller?</div>
+          <label class="toggle">
+            <input type="checkbox" id="solar-toggle">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="cw-desc">Med batteri lagras solel istället för att matas ut — och sparar importpriset (~1,20–1,50 kr/kWh) istället för utmatningspriset (~0,60 kr/kWh).</div>
+        <div id="solar-rows" style="display:none; margin-top:14px;">
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Årsproduktion solceller</label>
+            <div class="input-wrap">
+              <input type="number" id="solar-prod" value="8000" step="500">
+              <span class="input-unit">kWh/år</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Egenanvändning utan batteri</label>
+            <div class="slider-wrap">
+              <input type="range" id="solar-self-before" min="10" max="90" value="40" step="5">
+              <span class="slider-val" id="solar-self-before-display">40%</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Egenanvändning med batteri</label>
+            <div class="slider-wrap">
+              <input type="range" id="solar-self-after" min="10" max="100" value="70" step="5">
+              <span class="slider-val" id="solar-self-after-display">70%</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Utmatningspris (skattereduktion) <span class="hint">normalt 0,60 kr</span></label>
+            <div class="input-wrap">
+              <input type="number" id="solar-export-price" value="0.60" step="0.05">
+              <span class="input-unit">kr/kWh</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /panel -->
   </div>
 
@@ -600,7 +646,7 @@
     </div>
 
     <div class="assumptions">
-      <strong>Antaganden:</strong> Kalkylen antar att batteriet kan optimera ett köp/sälj-tillfälle per cykel. Elpriset räknas upp med vald inflation. Batterikapacitet degraderas linjärt. Checkwatt-intäkter hålls nominellt konstanta. Resultaten är estimat — verklig avkastning kan variera.
+      <strong>Antaganden:</strong> Kalkylen antar att batteriet kan optimera ett köp/sälj-tillfälle per cykel. Elpriset räknas upp med vald inflation. Batterikapacitet degraderas linjärt. Checkwatt-intäkter hålls nominellt konstanta. För solceller beräknas mervärdets av ökad egenanvändning som skillnaden mellan importpris och utmatningspris, skalat med elprisinflation. Resultaten är estimat — verklig avkastning kan variera.
     </div>
 
 
@@ -631,6 +677,22 @@
     calculate();
   });
 
+  // Solar toggle
+  document.getElementById('solar-toggle').addEventListener('change', function() {
+    document.getElementById('solar-rows').style.display = this.checked ? 'block' : 'none';
+    calculate();
+  });
+
+  // Solar sliders
+  document.getElementById('solar-self-before').addEventListener('input', function() {
+    document.getElementById('solar-self-before-display').textContent = this.value + '%';
+    calculate();
+  });
+  document.getElementById('solar-self-after').addEventListener('input', function() {
+    document.getElementById('solar-self-after-display').textContent = this.value + '%';
+    calculate();
+  });
+
   // All inputs
   document.querySelectorAll('input[type="number"], input[type="range"]').forEach(el => {
     el.addEventListener('input', calculate);
@@ -650,6 +712,17 @@
     const degradation = +document.getElementById('degradation').value / 100;
     const cwEnabled = document.getElementById('cw-toggle').checked;
     const cwIncome = cwEnabled ? (+document.getElementById('cw-income').value || 0) : 0;
+
+    // Solar self-consumption uplift
+    const solarEnabled = document.getElementById('solar-toggle').checked;
+    const solarProd = solarEnabled ? (+document.getElementById('solar-prod').value || 0) : 0;
+    const solarSelfBefore = solarEnabled ? (+document.getElementById('solar-self-before').value / 100) : 0;
+    const solarSelfAfter  = solarEnabled ? (+document.getElementById('solar-self-after').value  / 100) : 0;
+    const exportPrice = solarEnabled ? (+document.getElementById('solar-export-price').value || 0.60) : 0;
+    // Extra kWh stored in battery instead of exported (year 1, before degradation)
+    const extraSelfKwh = solarProd * (solarSelfAfter - solarSelfBefore); // positive if more self-use
+    // Value uplift per kWh: import price instead of export price
+    // (this scales with price inflation each year)
 
     // Usable kWh per year
     const usableCapacity = capacity * dod;
@@ -673,7 +746,9 @@
 
       const kwhThisYear = currentCapacity * cycles * 365;
       const savingElectricity = kwhThisYear * currentPrice;
-      const totalSaving = savingElectricity + cwIncome;
+      // Solar uplift: extra self-used kWh worth (importPrice - exportPrice) each
+      const solarUplift = extraSelfKwh * (currentPrice - exportPrice);
+      const totalSaving = savingElectricity + cwIncome + (solarUplift > 0 ? solarUplift : 0);
 
       // Without battery: cumulative cost of buying that energy
       cumulWithout += kwhThisYear * currentPrice;
@@ -689,7 +764,8 @@
     }
 
     // KPIs
-    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome;
+    const solarUpliftYear1 = extraSelfKwh * (price - exportPrice);
+    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome + (solarUpliftYear1 > 0 ? solarUpliftYear1 : 0);
     const totalProfit = cost - withBattery[YEARS]; // how much below zero at end
     const capacityAt25 = (usableCapacity * Math.pow(1 - degradation, YEARS) / dod * 100).toFixed(0);
     const co2 = Math.round(kwhPerYear * 0.05); // approx 50g CO2/kWh Swedish grid
