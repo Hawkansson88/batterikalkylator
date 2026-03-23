@@ -432,6 +432,224 @@
     margin-top: 16px;
     padding: 0 20px;
   }
+
+  /* TABS */
+  .tab-nav {
+    background: var(--sky);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .tab-nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    justify-content: flex-end;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 14px 22px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.9); }
+  .tab-btn.active {
+    color: var(--sun);
+    border-bottom-color: var(--sun);
+  }
+  .print-btn {
+    margin-left: auto;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    align-self: center;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .print-btn:hover { background: rgba(255,255,255,0.18); }
+
+  /* PAGE VIEWS */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* EXPLANATION PAGE */
+  .explain-container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+  .explain-hero {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .explain-hero h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    color: var(--sky);
+    font-weight: 400;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+  .explain-hero p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .explain-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 660px) { .explain-grid { grid-template-columns: 1fr; } }
+  .explain-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+  .explain-card-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+  .explain-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--sky);
+    margin-bottom: 10px;
+  }
+  .explain-card p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+  .explain-card p strong { color: var(--text); }
+  .explain-full {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+  .explain-full h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--sky);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .explain-full p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+  .explain-full p:last-child { margin-bottom: 0; }
+  .explain-full p strong { color: var(--text); }
+  .explain-steps {
+    counter-reset: steps;
+    list-style: none;
+    padding: 0;
+  }
+  .explain-steps li {
+    counter-increment: steps;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .explain-steps li::before {
+    content: counter(steps);
+    background: var(--sky);
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .explain-steps li strong { color: var(--text); }
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .faq-q {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--sky);
+    margin-bottom: 6px;
+  }
+  .faq-a {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+  .contact-strip {
+    background: var(--sky);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .contact-strip h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: white;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .contact-strip p { font-size: 0.82rem; color: rgba(255,255,255,0.7); }
+  .contact-strip a {
+    color: var(--sun);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* PRINT */
+  @media print {
+    .tab-nav, .no-print { display: none !important; }
+    .page { display: block !important; }
+    #page-forklaring { page-break-before: always; }
+    header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page-break { page-break-before: always; }
+    body { background: white; }
+    .panel, .kpi-card, .chart-panel, .explain-card, .explain-full, .contact-strip {
+      box-shadow: none !important;
+      border: 1px solid #ddd;
+    }
+    .contact-strip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
 </style>
 </head>
 <body>
@@ -449,6 +667,13 @@
   </div>
 </header>
 
+<nav class="tab-nav no-print">
+  <div class="tab-nav-inner">
+    <button class="print-btn" onclick="window.print()">🖨️ Skriv ut kalkyl</button>
+  </div>
+</nav>
+
+<div id="page-kalkyl" class="page active">
 <div class="container">
 
   <!-- LEFT: INPUTS -->
@@ -654,7 +879,94 @@
   </div>
 </div>
 
-<p class="footer-note">© 2026 Solenergi Norr AB · Nifsåsvägen 15, Östersund · 063-636 34 53 · Kalkylen är ett estimat och utgör inte finansiell rådgivning.</p>
+</div><!-- /container -->
+</div><!-- /page-kalkyl -->
+
+<div id="page-forklaring" class="page">
+<div class="explain-container">
+
+  <div class="explain-hero">
+    <h2>Vad innebär ett batteri för dig?</h2>
+    <p>Här förklarar vi hur ett hemma­batteri fungerar, vad du tjänar på det — och hur du ska tolka din kalkyl.</p>
+  </div>
+
+  <div class="explain-grid">
+    <div class="explain-card">
+      <div class="explain-card-icon">🔋</div>
+      <h3>Vad är ett hemmabatteri?</h3>
+      <p>Ett hemmabatteri är en stor uppladdningsbar enhet som du installerar hemma — ungefär som ett stort mobil­batteri fast för hela huset. Det lagrar el när den är billig eller när dina solceller producerar mer än du hinner använda, och ger tillbaka elen när du behöver den.</p>
+    </div>
+    <div class="explain-card">
+      <div class="explain-card-icon">☀️</div>
+      <h3>Solceller utan batteri — vad händer med överskottet?</h3>
+      <p>Utan batteri använder du kanske <strong>30% av solelen</strong> själv. Resten matas ut på elnätet och du får ett litet ersättningspris — idag ofta bara <strong>15–20 öre per kWh</strong> (spotpris sommar). Det är ungefär en tiondel av vad elen kostar att köpa in.</p>
+    </div>
+    <div class="explain-card">
+      <div class="explain-card-icon">💡</div>
+      <h3>Med batteri — du använder mer av din egen el</h3>
+      <p>Med ett batteri kan du i stället lagra överskottet och använda det på kvällen eller en molnig dag. Egenanvändningen kan öka till <strong>60–75%</strong>. Varje kWh du lagrar i stället för att sälja är värd <strong>1,20–1,50 kr</strong> — eftersom det är vad du annars skulle betala för att köpa el.</p>
+    </div>
+    <div class="explain-card">
+      <div class="explain-card-icon">⚡</div>
+      <h3>Batteriet laddar och laddar ur — varje dag</h3>
+      <p>Under natten eller på dagen laddas batteriet med billig el (eller solel). På kvällen när du lagar mat och tittar på TV används den lagrade elen. Det kan ske <strong>en eller flera gånger per dag</strong>. Ju fler cykler, desto snabbare tjänar du ihop investeringen.</p>
+    </div>
+  </div>
+
+  <div class="explain-full">
+    <h3>🌐 Checkwatt — tjäna pengar på elnätet</h3>
+    <p>Solenergi Norr är certifierad partner till <strong>Checkwatt</strong> — en tjänst som låter dig hyra ut delar av batteriets kapacitet till elnätsoperatörer. När det är obalans i elnätet (vilket händer hela tiden) kan ditt batteri hjälpa till att jämna ut det — och du får betalt för det.</p>
+    <p>Historiskt har detta gett <strong>50 000–60 000 kr per år</strong> för ett normalt villabatteri. Det är en intäkt som kommer <em>utöver</em> vad du sparar på din egna elkostnad. Många kunder får tillbaka hela investeringen på under 5 år tack vare Checkwatt.</p>
+    <p><strong>Du behöver inte göra något själv</strong> — allt sköts automatiskt av systemet, och ditt batteri är alltid laddat när du behöver det.</p>
+  </div>
+
+  <div class="explain-full">
+    <h3>📊 Så läser du kalkylen</h3>
+    <ol class="explain-steps">
+      <li><strong>Batterikostnad</strong> — det du betalar för batteri + installation, efter eventuellt ROT-avdrag. Det är startpunkten för grafen.</li>
+      <li><strong>Grafen</strong> — den grå linjen visar vad el kostar dig totalt utan batteri, år för år. Den gula linjen börjar högt (din investering) men sjunker för varje år du sparar pengar. Där linjerna möts är din <em>återbetalningstid</em>.</li>
+      <li><strong>Besparing år 1</strong> — vad du faktiskt sparar (eller tjänar) redan första året, räknat på batteri­cykler + eventuell sol­besparing + Checkwatt.</li>
+      <li><strong>Total vinst 25 år</strong> — hur mycket du sammantaget tjänar under batteriets livslängd, utöver vad du betalade.</li>
+      <li><strong>Elprisinflation</strong> — el har historiskt blivit dyrare med 2–4% per år. Ju mer elen stiger, desto bättre ser din kalkyl ut med åren.</li>
+    </ol>
+  </div>
+
+  <div class="explain-full">
+    <h3>❓ Vanliga frågor</h3>
+    <div class="faq-item">
+      <div class="faq-q">Hur länge håller ett batteri?</div>
+      <div class="faq-a">De flesta moderna hemmabatterier är garanterade i 10 år och håller i praktiken 15–25 år. Kapaciteten minskar lite varje år — ungefär som en mobiltelefon — men klarar fortfarande stor del av arbetet mot slutet av sin livstid.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Vad händer vid strömavbrott?</div>
+      <div class="faq-a">Många batterier kan kopplas in som reservkraft (ödrift) så att du har el hemma även när nätet ligger nere. Fråga din installatör om det alternativet passar just ditt system.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Behöver jag solceller för att ha ett batteri?</div>
+      <div class="faq-a">Nej! Batteriet kan laddas med billig natt­el från elnätet och sedan användas på dagen när priset är högt. Kombinationen med solceller ger störst effekt, men batteriet fungerar utmärkt helt fristående.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Är kalkylen garanterad?</div>
+      <div class="faq-a">Nej — kalkylen bygger på antaganden om framtida elpriser, din förbrukning och batteriets prestanda. Verkligt utfall kan vara högre eller lägre. Men de grundläggande sparlogikerna — egenanvändning, Checkwatt, ladda billigt/använd dyrt — är reella och välbevisade.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Vad kostar det att installera?</div>
+      <div class="faq-a">Priset varierar beroende på batteriets storlek och din befintliga installation. Solenergi Norr gör alltid ett kostnadsfritt platsbesök och ger en skräddarsydd offert — utan förbindelser.</div>
+    </div>
+  </div>
+
+  <div class="contact-strip">
+    <div>
+      <h3>Frågor? Vi hjälper dig gärna.</h3>
+      <p>Östersund: <a href="tel:+46636363453">063-636 34 53</a> &nbsp;·&nbsp; Sundsvall: <a href="tel:+46703789050">070-378 90 50</a> &nbsp;·&nbsp; <a href="mailto:info@solenerginorr.se">info@solenerginorr.se</a></p>
+    </div>
+    <a href="https://www.solenerginorr.se/kontakta-oss" target="_blank" class="cta-btn no-print">Boka gratis besök →</a>
+  </div>
+
+</div>
+</div><!-- /page-forklaring -->
+
+<p class="footer-note no-print">© 2026 Solenergi Norr AB · Nifsåsvägen 15, Östersund · 063-636 34 53 · Kalkylen är ett estimat och utgör inte finansiell rådgivning.</p>
 
 <script>
   const YEARS = 25;
@@ -848,6 +1160,16 @@
 
     // Add zero line annotation manually
     // (Chart.js 4 doesn't need plugin for this — zero is visible on y axis)
+  }
+
+
+  function showTab(tab) {
+    document.getElementById('page-kalkyl').classList.toggle('active', tab === 'kalkyl');
+    document.getElementById('page-forklaring').classList.toggle('active', tab === 'forklaring');
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', (i === 0 && tab === 'kalkyl') || (i === 1 && tab === 'forklaring'));
+    });
+    window.scrollTo(0, 0);
   }
 
   calculate();
