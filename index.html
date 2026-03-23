@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batterikalkylator – Solenergi Norr</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sun: #F5A623;
+    --sun-light: #FDD98A;
+    --sky: #1A3A5C;
+    --sky-mid: #2C5F8A;
+    --sky-light: #EAF2FA;
+    --green: #4CAF50;
+    --green-light: #E8F5E9;
+    --white: #FFFFFF;
+    --gray: #F4F6F9;
+    --text: #1A2B3C;
+    --text-muted: #6B7F93;
+    --border: #D6E4EF;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(26,58,92,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--gray);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--sky);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .logo-wrap img {
+    height: 52px;
+    filter: brightness(0) invert(1);
+  }
+  .header-title {
+    text-align: right;
+  }
+  .header-title h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--white);
+    line-height: 1.2;
+    font-weight: 400;
+  }
+  .header-title span {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: var(--sun-light);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+  .sun-decor {
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(245,166,35,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* LAYOUT */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .container { grid-template-columns: 1fr; }
+    .header-inner { flex-direction: column; text-align: center; }
+    .header-title { text-align: center; }
+  }
+
+  /* PANEL */
+  .panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 24px;
+  }
+  .panel-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--sun);
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FORM GROUPS */
+  .form-group {
+    margin-bottom: 18px;
+  }
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  label .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap input[type="number"] {
+    width: 100%;
+    padding: 10px 48px 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s;
+    appearance: textfield;
+  }
+  .input-wrap input[type="number"]:focus {
+    outline: none;
+    border-color: var(--sky-mid);
+    box-shadow: 0 0 0 3px rgba(44,95,138,0.1);
+  }
+  .input-unit {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    font-weight: 500;
+  }
+
+  /* SLIDER */
+  .slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--sky);
+    cursor: pointer;
+    border: 2px solid var(--white);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .slider-val {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--sky);
+    min-width: 48px;
+    text-align: right;
+  }
+
+  /* CHECKWATT TOGGLE */
+  .checkwatt-box {
+    background: linear-gradient(135deg, #EAF2FA 0%, #E8F5E9 100%);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .cw-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .cw-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--sky);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cw-badge {
+    font-size: 0.68rem;
+    background: var(--green);
+    color: white;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .toggle {
+    position: relative;
+    width: 44px; height: 24px;
+    cursor: pointer;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 24px;
+    transition: background 0.2s;
+  }
+  .toggle input:checked + .toggle-track { background: var(--green); }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle input:checked ~ .toggle-thumb { left: 23px; }
+  .cw-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .cw-income-row {
+    margin-top: 10px;
+    display: none;
+  }
+  .cw-income-row.active { display: block; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* RESULTS */
+  .results-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .kpi-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 16px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); }
+  .kpi-card.highlight {
+    background: var(--sky);
+    color: white;
+  }
+  .kpi-icon {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--sky);
+  }
+  .kpi-card.highlight .kpi-value { color: var(--sun); }
+  .kpi-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .kpi-card.highlight .kpi-label { color: rgba(255,255,255,0.7); }
+
+  /* NO PAYBACK WARNING */
+  .warning-box {
+    background: #FFF8E1;
+    border: 1.5px solid #FFD54F;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    color: #7B5800;
+    display: none;
+  }
+
+  /* CHART */
+  .chart-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chart-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--sky);
+  }
+  .chart-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    align-items: center;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+  }
+  canvas { width: 100% !important; }
+
+  /* ASSUMPTIONS */
+  .assumptions {
+    background: var(--sky-light);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .assumptions strong { color: var(--sky); }
+
+  /* CTA */
+  .cta-panel {
+    background: linear-gradient(135deg, var(--sky) 0%, var(--sky-mid) 100%);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .cta-text h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    color: var(--white);
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .cta-text p {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .cta-btn {
+    background: var(--sun);
+    color: var(--sky);
+    border: none;
+    padding: 13px 26px;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .cta-btn:hover { background: #FFC949; transform: scale(1.03); }
+
+  /* FOOTER NOTE */
+  .footer-note {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 16px;
+    padding: 0 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sun-decor"></div>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="https://www.solenerginorr.se/content/uploads/2019/04/Solenergi-Norr-Logo.png" alt="Solenergi Norr">
+    </div>
+    <div class="header-title">
+      <h1>Batterikalkylator</h1>
+      <span>Beräkna din investering & återbetalningstid</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- LEFT: INPUTS -->
+  <div>
+    <div class="panel">
+      <div class="panel-title">🔋 Batteriinvestering</div>
+
+      <div class="form-group">
+        <label>Totalt pris inkl. installation <span class="hint">efter ROT om tillämpligt</span></label>
+        <div class="input-wrap">
+          <input type="number" id="cost" value="120000" step="5000">
+          <span class="input-unit">kr</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Batterikapacitet</label>
+        <div class="input-wrap">
+          <input type="number" id="capacity" value="10" step="0.5">
+          <span class="input-unit">kWh</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Utnyttjandegrad (DoD) <span class="hint" id="dod-display">80%</span></label>
+        <div class="slider-wrap">
+          <input type="range" id="dod" min="50" max="100" value="80" step="5">
+          <span class="slider-val" id="dod-val">80%</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Antal cykler per dag <span class="hint" id="cycles-display">1</span></label>
+        <div class="slider-wrap">
+          <input type="range" id="cycles" min="0.5" max="2" value="1" step="0.5">
+          <span class="slider-val" id="cycles-val">1</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="panel-title">⚡ Elpris & tariff</div>
+
+      <div class="form-group">
+        <label>Elpris idag (inkl. skatter & nätavgift)</label>
+        <div class="input-wrap">
+          <input type="number" id="price" value="1.50" step="0.05">
+          <span class="input-unit">kr/kWh</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Förväntad elprisökning per år</label>
+        <div class="slider-wrap">
+          <input type="range" id="inflation" min="0" max="8" value="3" step="0.5">
+          <span class="slider-val" id="inflation-val">3%</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Batteriets degradering per år</label>
+        <div class="slider-wrap">
+          <input type="range" id="degradation" min="0" max="5" value="2" step="0.5">
+          <span class="slider-val" id="degradation-val">2%</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="panel-title">🌿 Checkwatt — nätbalansering</div>
+
+      <div class="checkwatt-box">
+        <div class="cw-header">
+          <div class="cw-label">
+            Checkwatt-intäkter
+            <span class="cw-badge">PARTNER</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="cw-toggle" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="cw-desc">Solenergi Norr är certifierad Checkwatt-partner. Sälj batterikapacitet till elnätet och tjäna extra pengar utöver elkostnadsbesparingen.</div>
+        <div class="cw-income-row active" id="cw-income-row">
+          <div class="form-group" style="margin-top:12px; margin-bottom:0;">
+            <label>Förväntad Checkwatt-intäkt per år <span class="hint">hist. 50–60 000 kr</span></label>
+            <div class="input-wrap">
+              <input type="number" id="cw-income" value="30000" step="1000">
+              <span class="input-unit">kr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel -->
+  </div>
+
+  <!-- RIGHT: RESULTS -->
+  <div class="results-col">
+
+    <div id="warning-box" class="warning-box">
+      ⚠️ Med dessa inställningar nås ingen återbetalningstid inom 25 år. Justera elpris, Checkwatt-intäkt eller batterikostnad.
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card highlight">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-value" id="kpi-payback">–</div>
+        <div class="kpi-label">Återbetalningstid</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value" id="kpi-saving-year1">–</div>
+        <div class="kpi-label">Besparing år 1</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">📈</div>
+        <div class="kpi-value" id="kpi-total-25">–</div>
+        <div class="kpi-label">Total vinst, 25 år</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">⚡</div>
+        <div class="kpi-value" id="kpi-kwh-year">–</div>
+        <div class="kpi-label">Optimerad energi/år</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🌿</div>
+        <div class="kpi-value" id="kpi-co2">–</div>
+        <div class="kpi-label">CO₂-besparing/år</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🔋</div>
+        <div class="kpi-value" id="kpi-capacity-25">–</div>
+        <div class="kpi-label">Kap. år 25</div>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Kumulativ kostnadsjämförelse</div>
+          <div class="chart-subtitle">Utan batteri vs. med batteri — 25 år</div>
+        </div>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:#9DB8CC;"></span>Utan batteri</span>
+          <span><span class="legend-dot" style="background:#F5A623;"></span>Med batteri</span>
+        </div>
+      </div>
+      <canvas id="chart" height="240"></canvas>
+    </div>
+
+    <div class="assumptions">
+      <strong>Antaganden:</strong> Kalkylen antar att batteriet kan optimera ett köp/sälj-tillfälle per cykel. Elpriset räknas upp med vald inflation. Batterikapacitet degraderas linjärt. Checkwatt-intäkter hålls nominellt konstanta. Resultaten är estimat — verklig avkastning kan variera.
+    </div>
+
+
+
+  </div>
+</div>
+
+<p class="footer-note">© 2026 Solenergi Norr AB · Nifsåsvägen 15, Östersund · 063-636 34 53 · Kalkylen är ett estimat och utgör inte finansiell rådgivning.</p>
+
+<script>
+  const YEARS = 25;
+  let chart = null;
+
+  // Slider sync
+  function syncSlider(id, valId, suffix) {
+    const el = document.getElementById(id);
+    const val = document.getElementById(valId);
+    el.addEventListener('input', () => { val.textContent = el.value + suffix; calculate(); });
+  }
+  syncSlider('dod', 'dod-val', '%');
+  syncSlider('cycles', 'cycles-val', '');
+  syncSlider('inflation', 'inflation-val', '%');
+  syncSlider('degradation', 'degradation-val', '%');
+
+  // Checkwatt toggle
+  document.getElementById('cw-toggle').addEventListener('change', function() {
+    document.getElementById('cw-income-row').classList.toggle('active', this.checked);
+    calculate();
+  });
+
+  // All inputs
+  document.querySelectorAll('input[type="number"], input[type="range"]').forEach(el => {
+    el.addEventListener('input', calculate);
+  });
+
+  function fmt(val) {
+    return new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 }).format(val);
+  }
+
+  function calculate() {
+    const cost = +document.getElementById('cost').value || 0;
+    const capacity = +document.getElementById('capacity').value || 0;
+    const dod = +document.getElementById('dod').value / 100;
+    const cycles = +document.getElementById('cycles').value || 1;
+    const price = +document.getElementById('price').value || 0;
+    const inflation = +document.getElementById('inflation').value / 100;
+    const degradation = +document.getElementById('degradation').value / 100;
+    const cwEnabled = document.getElementById('cw-toggle').checked;
+    const cwIncome = cwEnabled ? (+document.getElementById('cw-income').value || 0) : 0;
+
+    // Usable kWh per year
+    const usableCapacity = capacity * dod;
+    const kwhPerYear = usableCapacity * cycles * 365;
+
+    // Build year-by-year arrays
+    const withoutBattery = []; // cumulative cost without battery
+    const withBattery = [cost]; // starts at investment cost
+    let cumulWithout = 0;
+    let cumulWith = cost;
+    let paybackYear = null;
+
+    let currentPrice = price;
+    let currentCapacity = usableCapacity;
+
+    for (let y = 1; y <= YEARS; y++) {
+      // Price increases with inflation
+      currentPrice = price * Math.pow(1 + inflation, y);
+      // Capacity degrades
+      currentCapacity = usableCapacity * Math.pow(1 - degradation, y);
+
+      const kwhThisYear = currentCapacity * cycles * 365;
+      const savingElectricity = kwhThisYear * currentPrice;
+      const totalSaving = savingElectricity + cwIncome;
+
+      // Without battery: cumulative cost of buying that energy
+      cumulWithout += kwhThisYear * currentPrice;
+      withoutBattery.push(cumulWithout);
+
+      // With battery: starts at cost, decreases by savings
+      cumulWith -= totalSaving;
+      withBattery.push(cumulWith);
+
+      if (paybackYear === null && cumulWith <= 0) {
+        paybackYear = y;
+      }
+    }
+
+    // KPIs
+    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome;
+    const totalProfit = cost - withBattery[YEARS]; // how much below zero at end
+    const capacityAt25 = (usableCapacity * Math.pow(1 - degradation, YEARS) / dod * 100).toFixed(0);
+    const co2 = Math.round(kwhPerYear * 0.05); // approx 50g CO2/kWh Swedish grid
+
+    document.getElementById('kpi-payback').textContent = paybackYear ? paybackYear + ' år' : '> 25 år';
+    document.getElementById('kpi-saving-year1').textContent = fmt(saving1);
+    document.getElementById('kpi-total-25').textContent = totalProfit > 0 ? fmt(totalProfit) : '–';
+    document.getElementById('kpi-kwh-year').textContent = Math.round(kwhPerYear).toLocaleString('sv-SE') + ' kWh';
+    document.getElementById('kpi-co2').textContent = co2.toLocaleString('sv-SE') + ' kg';
+    document.getElementById('kpi-capacity-25').textContent = capacityAt25 + '%';
+
+    document.getElementById('warning-box').style.display = (!paybackYear) ? 'block' : 'none';
+
+    // Chart
+    const labels = ['Nu', ...Array.from({length: YEARS}, (_, i) => 'År ' + (i + 1))];
+
+    if (chart) chart.destroy();
+    const ctx = document.getElementById('chart').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Utan batteri (kumulativ elkostnad)',
+            data: [0, ...withoutBattery],
+            borderColor: '#9DB8CC',
+            backgroundColor: 'rgba(157,184,204,0.08)',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: true,
+          },
+          {
+            label: 'Med batteri (nettokostnad)',
+            data: withBattery,
+            borderColor: '#F5A623',
+            backgroundColor: 'rgba(245,166,35,0.08)',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            tension: 0.3,
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ' ' + ctx.dataset.label + ': ' + fmt(ctx.parsed.y)
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(0,0,0,0.04)' },
+            ticks: { font: { family: 'Outfit', size: 11 }, maxRotation: 0,
+              callback: function(val, idx) {
+                if (idx === 0 || idx % 5 === 0) return this.getLabelForValue(val);
+                return '';
+              }
+            }
+          },
+          y: {
+            grid: { color: 'rgba(0,0,0,0.06)' },
+            ticks: {
+              font: { family: 'Outfit', size: 11 },
+              callback: val => (val / 1000).toFixed(0) + 'k kr'
+            }
+          }
+        },
+        animation: { duration: 500, easing: 'easeInOutQuart' }
+      }
+    });
+
+    // Add zero line annotation manually
+    // (Chart.js 4 doesn't need plugin for this — zero is visible on y axis)
+  }
+
+  calculate();
+</script>
+</body>
+</html>
