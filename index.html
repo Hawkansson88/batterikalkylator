@@ -650,6 +650,62 @@
     }
     .contact-strip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
+
+  /* TOOLTIPS */
+  .tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 5px;
+  }
+  .tooltip-icon {
+    width: 16px; height: 16px;
+    background: var(--sky-mid);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    flex-shrink: 0;
+    user-select: none;
+    line-height: 1;
+  }
+  .tooltip-box {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--sky);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.55;
+    padding: 10px 13px;
+    border-radius: 8px;
+    width: 230px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 100;
+    transition: opacity 0.18s, visibility 0.18s;
+    pointer-events: none;
+  }
+  .tooltip-box::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--sky);
+  }
+  .tooltip-wrap:hover .tooltip-box,
+  .tooltip-wrap:focus-within .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
@@ -682,7 +738,7 @@
       <div class="panel-title">🔋 Batteriinvestering</div>
 
       <div class="form-group">
-        <label>Totalt pris inkl. installation <span class="hint">efter ROT om tillämpligt</span></label>
+        <label>Totalt pris inkl. installation <span class="hint">efter ROT om tillämpligt</span><span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Det totala priset du betalar för batteri och installation. ROT-avdrag (30%) kan dras av om du är privatperson — ange priset efter avdrag.</span></span></label>
         <div class="input-wrap">
           <input type="number" id="cost" value="120000" step="5000">
           <span class="input-unit">kr</span>
@@ -690,7 +746,7 @@
       </div>
 
       <div class="form-group">
-        <label>Batterikapacitet</label>
+        <label>Batterikapacitet<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur mycket energi batteriet kan lagra, mätt i kilowattimmar (kWh). Ett normalt villabatteri är 10–15 kWh. Ju större, desto mer kan du lagra — men priset ökar också.</span></span></label>
         <div class="input-wrap">
           <input type="number" id="capacity" value="10" step="0.5">
           <span class="input-unit">kWh</span>
@@ -698,7 +754,7 @@
       </div>
 
       <div class="form-group">
-        <label>Utnyttjandegrad (DoD) <span class="hint" id="dod-display">80%</span></label>
+        <label>Utnyttjandegrad (DoD)<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Depth of Discharge — hur stor del av batteriets kapacitet du faktiskt använder. 80% betyder att du laddar ur 8 kWh av 10 kWh. Lägre DoD ökar batteriets livslängd.</span></span><span class="hint" id="dod-display">80%</span></label>
         <div class="slider-wrap">
           <input type="range" id="dod" min="50" max="100" value="80" step="5">
           <span class="slider-val" id="dod-val">80%</span>
@@ -706,7 +762,7 @@
       </div>
 
       <div class="form-group">
-        <label>Antal cykler per dag <span class="hint" id="cycles-display">1</span></label>
+        <label>Antal cykler per dag<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många gånger batteriet laddas och laddas ur per dag. 1 cykel = laddas på natten, används på dagen. Med solceller kan du få 1–2 cykler per dag.</span></span><span class="hint" id="cycles-display">1</span></label>
         <div class="slider-wrap">
           <input type="range" id="cycles" min="0.5" max="2" value="1" step="0.5">
           <span class="slider-val" id="cycles-val">1</span>
@@ -717,7 +773,7 @@
       <div class="panel-title">⚡ Elpris & tariff</div>
 
       <div class="form-group">
-        <label>Elpris idag (inkl. skatter & nätavgift)</label>
+        <label>Elpris idag (inkl. skatter & nätavgift)<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Det totala priset du betalar per kWh el — spotpris + elöverföring + skatter & avgifter. I Norrland är detta typiskt 1,20–1,60 kr/kWh. Kolla din elfaktura för exakt siffra.</span></span></label>
         <div class="input-wrap">
           <input type="number" id="price" value="1.50" step="0.05">
           <span class="input-unit">kr/kWh</span>
@@ -725,7 +781,7 @@
       </div>
 
       <div class="form-group">
-        <label>Förväntad elprisökning per år</label>
+        <label>Förväntad elprisökning per år<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur mycket elpriset förväntas stiga per år. Historiskt har elpriset i Sverige stigit med 2–4% per år i snitt. Ju högre inflation, desto snabbare tjänar batteriet in sig.</span></span></label>
         <div class="slider-wrap">
           <input type="range" id="inflation" min="0" max="8" value="3" step="0.5">
           <span class="slider-val" id="inflation-val">3%</span>
@@ -733,7 +789,7 @@
       </div>
 
       <div class="form-group">
-        <label>Batteriets degradering per år</label>
+        <label>Batteriets degradering per år<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur mycket batteriets kapacitet minskar varje år — precis som en mobil som håller kortare och kortare. Typiskt 1–2% per år. Efter 20 år är batteriet ungefär 70–80% av sin ursprungliga kapacitet.</span></span></label>
         <div class="slider-wrap">
           <input type="range" id="degradation" min="0" max="5" value="2" step="0.5">
           <span class="slider-val" id="degradation-val">2%</span>
@@ -758,7 +814,7 @@
         <div class="cw-desc">Solenergi Norr är certifierad Checkwatt-partner. Sälj batterikapacitet till elnätet och tjäna extra pengar utöver elkostnadsbesparingen.</div>
         <div class="cw-income-row active" id="cw-income-row">
           <div class="form-group" style="margin-top:12px; margin-bottom:0;">
-            <label>Förväntad Checkwatt-intäkt per år <span class="hint">hist. 50–60 000 kr</span></label>
+            <label>Förväntad Checkwatt-intäkt per år<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Checkwatt låter dig hyra ut batterikapacitet till elnätet för att balansera strömmen. Du får betalt utan att göra något — allt sker automatiskt. Historisk intäkt: 50–60 000 kr/år.</span></span><span class="hint">hist. 50–60 000 kr</span></label>
             <div class="input-wrap">
               <input type="number" id="cw-income" value="30000" step="1000">
               <span class="input-unit">kr</span>
@@ -783,28 +839,28 @@
         <div class="cw-desc">Utan batteri används typiskt 30% av solelen själv, resten matas ut till spotpris (~0,20 kr/kWh). Med batteri ökar egenanvändningen — och varje extra kWh är värd importpriset (~1,20–1,50 kr) istället för spotpriset.</div>
         <div id="solar-rows" style="display:none; margin-top:14px;">
           <div class="form-group" style="margin-bottom:12px;">
-            <label>Årsproduktion solceller</label>
+            <label>Årsproduktion solceller<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur mycket el dina solceller producerar totalt per år, mätt i kWh. Finns ofta i din växelriktares app eller i installationsdokumentationen. I Norrland ger en typisk villa 5 000–10 000 kWh/år.</span></span></label>
             <div class="input-wrap">
               <input type="number" id="solar-prod" value="8000" step="500">
               <span class="input-unit">kWh/år</span>
             </div>
           </div>
           <div class="form-group" style="margin-bottom:12px;">
-            <label>Egenanvändning utan batteri <span class="hint">typiskt 30%</span></label>
+            <label>Egenanvändning utan batteri<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur stor andel av solelen du använder direkt i huset utan batteri. Resten matas ut på nätet. Utan batteri är detta typiskt 25–35% — du hinner inte använda allt som produceras mitt på dagen.</span></span><span class="hint">typiskt 30%</span></label>
             <div class="slider-wrap">
               <input type="range" id="solar-self-before" min="10" max="90" value="30" step="5">
               <span class="slider-val" id="solar-self-before-display">30%</span>
             </div>
           </div>
           <div class="form-group" style="margin-bottom:12px;">
-            <label>Egenanvändning med batteri <span class="hint">typiskt 70%</span></label>
+            <label>Egenanvändning med batteri<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Med batteri lagras överskottet och används senare. Egenanvändningen ökar typiskt till 60–80%. Ju mer du använder av din egen sol, desto mindre köper du från nätet — och desto mer sparar du.</span></span><span class="hint">typiskt 70%</span></label>
             <div class="slider-wrap">
               <input type="range" id="solar-self-after" min="10" max="100" value="70" step="5">
               <span class="slider-val" id="solar-self-after-display">70%</span>
             </div>
           </div>
           <div class="form-group" style="margin-bottom:0;">
-            <label>Utmatningspris (spotpris) <span class="hint">typiskt 0,15–0,20 kr sommar</span></label>
+            <label>Utmatningspris (spotpris)<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Priset du får när du matar ut el på nätet. På sommaren när alla solceller producerar är spotpriset lågt — ofta 10–25 öre/kWh. Därför är det mycket bättre att lagra elen än att sälja den.</span></span><span class="hint">typiskt 0,15–0,20 kr sommar</span></label>
             <div class="input-wrap">
               <input type="number" id="solar-export-price" value="0.20" step="0.05">
               <span class="input-unit">kr/kWh</span>
@@ -958,7 +1014,7 @@
   <div class="contact-strip">
     <div>
       <h3>Frågor? Vi hjälper dig gärna.</h3>
-      <p>Östersund: <a href="tel:+46636363453">063-636 34 53</a> &nbsp;·&nbsp; Sundsvall: <a href="tel:+46703789050">070-378 90 50</a> &nbsp;·&nbsp; <a href="mailto:info@solenerginorr.se">info@solenerginorr.se</a></p>
+      <p>Östersund: <a href="tel:+46636363453">063-636 34 53</a> &nbsp;·&nbsp; Sundsvall: <a href="tel:+46703789050">070-378 90 50</a> &nbsp;·&nbsp; <a href="/cdn-cgi/l/email-protection#ef86818980af9c80838a818a9d888681809d9dc19c8a"><span class="__cf_email__" data-cfemail="6a03040c052a1905060f040f180d030405181844190f">[email&#160;protected]</span></a></p>
     </div>
     <a href="https://www.solenerginorr.se/kontakta-oss" target="_blank" class="cta-btn no-print">Boka gratis besök →</a>
   </div>
@@ -969,6 +1025,7 @@
 <p class="footer-note no-print">© 2026 Solenergi Norr AB · Nifsåsvägen 15, Östersund · 063-636 34 53 · Kalkylen är ett estimat och utgör inte finansiell rådgivning.</p>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
   const YEARS = 25;
   let chart = null;
 
@@ -1163,16 +1220,19 @@
   }
 
 
+  calculate();
+
   function showTab(tab) {
     document.getElementById('page-kalkyl').classList.toggle('active', tab === 'kalkyl');
     document.getElementById('page-forklaring').classList.toggle('active', tab === 'forklaring');
+    
     document.querySelectorAll('.tab-btn').forEach((btn, i) => {
       btn.classList.toggle('active', (i === 0 && tab === 'kalkyl') || (i === 1 && tab === 'forklaring'));
     });
     window.scrollTo(0, 0);
   }
 
-  calculate();
+}); // DOMContentLoaded
 </script>
 </body>
 </html>
