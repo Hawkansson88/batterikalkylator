@@ -639,17 +639,69 @@
 
   /* PRINT */
   @media print {
-    .tab-nav, .no-print { display: none !important; }
+    /* Hide all interactive/nav elements */
+    .tab-nav, .no-print, .toggle, .tooltip-wrap,
+    input[type="range"], input[type="number"], input[type="checkbox"],
+    .slider-wrap, .input-wrap, .form-group label .hint,
+    .print-btn { display: none !important; }
+
+    /* Show all pages */
     .page { display: block !important; }
+
+    /* Page breaks */
     #page-forklaring { page-break-before: always; }
-    header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page-break { page-break-before: always; }
-    body { background: white; }
-    .panel, .kpi-card, .chart-panel, .explain-card, .explain-full, .contact-strip {
-      box-shadow: none !important;
-      border: 1px solid #ddd;
+    .results-col { page-break-before: avoid; }
+
+    /* Colors */
+    header, .contact-strip, .kpi-card.highlight {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
-    .contact-strip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: white; }
+
+    /* Clean borders */
+    .panel, .kpi-card, .chart-panel, .explain-card, .explain-full {
+      box-shadow: none !important;
+      border: 1px solid #ccc !important;
+      break-inside: avoid;
+    }
+
+    /* Hide toggled-off sections entirely */
+    #cw-income-row[style*="display: none"],
+    #peak-rows[style*="display: none"],
+    #arb-rows[style*="display: none"],
+    #solar-rows[style*="display: none"] { display: none !important; }
+
+    /* Show section summaries clearly */
+    .section-summary { display: block !important; }
+
+    /* Hide Checkwatt income input row in print — show only summary */
+    #cw-income-row .form-group { display: none !important; }
+    #cw-income-row .section-summary { display: block !important; }
+
+    /* Layout: stack columns */
+    .container { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
+
+    /* Hide panel-titles for sections that are off */
+    .checkwatt-box .cw-header { display: none !important; }
+  }
+
+
+  /* SECTION SUMMARIES */
+  .section-summary {
+    margin-top: 12px;
+    background: rgba(26,58,92,0.06);
+    border-left: 3px solid var(--sky-mid);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: var(--sky);
+    font-weight: 500;
+  }
+  .section-summary span {
+    font-weight: 700;
+    color: var(--sky);
   }
 
   /* TOOLTIPS */
@@ -726,7 +778,7 @@
 
 <nav class="tab-nav no-print">
   <div class="tab-nav-inner">
-    <button class="print-btn" onclick="window.print()">🖨️ Skriv ut kalkyl</button>
+    <button class="print-btn" onclick="window.print()">📄 Skapa PDF</button>
   </div>
 </nav>
 
@@ -807,30 +859,39 @@
             <span class="cw-badge">PARTNER</span>
           </div>
           <label class="toggle">
-            <input type="checkbox" id="cw-toggle" checked>
+            <input type="checkbox" id="cw-toggle">
             <div class="toggle-track"></div>
             <div class="toggle-thumb"></div>
           </label>
         </div>
-        <div class="cw-desc">Solenergi Norr är certifierad Checkwatt-partner. <strong>OBS:</strong> Ersättningen varierar över tid — historiskt 50–60 000 kr/år, men aktuell nivå är lägre. Ange det belopp som används i kalkylen nedan.</div>
-        <div class="cw-income-row active" id="cw-income-row">
+        <div class="cw-desc">Solenergi Norr är certifierad Checkwatt-partner. Sälj batterikapacitet till elnätet och tjäna extra pengar — ersättningen varierar beroende på marknadsläget.</div>
+        <div class="cw-income-row" id="cw-income-row" style="display:none;">
           <div class="form-group" style="margin-top:12px; margin-bottom:0;">
-            <label>Checkwatt-intäkt i kalkylen<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Checkwatt låter dig hyra ut batterikapacitet till elnätet. Historisk intäkt: 50–60 000 kr/år — men aktuell ersättning är lägre. Sätt ett försiktigt värde; vi rekommenderar 10 000–20 000 kr/år baserat på senaste utfall.</span></span><span class="hint">sätt ett realistiskt värde</span></label>
+            <label>Uppskattad Checkwatt-intäkt per år<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Ange den intäkt du vill räkna med. Ersättningen varierar — fråga Solenergi Norr om aktuell nivå för just er kund.</span></span></label>
             <div class="input-wrap">
               <input type="number" id="cw-income" value="15000" step="1000">
-              <span class="input-unit">kr</span>
+              <span class="input-unit">kr/år</span>
             </div>
           </div>
+          <div class="section-summary" id="cw-summary" style="display:none;"></div>
         </div>
       </div>
 
 
       <hr class="divider">
-      <div class="panel-title">⚡ Effekttopp — vinterbesparing</div>
+      <div class="panel-title">⚡ Effekttoppskapning — besparing nätfaktura</div>
 
       <div class="checkwatt-box" style="background: linear-gradient(135deg, #EAF2FA 0%, #E8F5E9 100%); border-color: #B3D4E8;">
-        <div class="cw-desc" style="margin-bottom:12px;">Batteriet laddar under natten när elen är billig och kapar effekttoppar på morgon/kväll. Gäller kunder med effekttaxa — sätt månader till 0 om ej tillämpligt.</div>
-        <div id="peak-rows" style="margin-top:0;">
+        <div class="cw-header">
+          <div class="cw-label" style="color: var(--sky);">Gäller kunden effekttaxa?</div>
+          <label class="toggle">
+            <input type="checkbox" id="peak-toggle">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="cw-desc">Batteriet laddar under natten när elen är billig och kapar effekttoppar på morgon/kväll.</div>
+        <div id="peak-rows" style="display:none; margin-top:14px;">
           <div class="form-group" style="margin-bottom:12px;">
             <label>Antal vintermånader med effekttaxa
               <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Antalet månader per år där effekttoppen är kritisk — typiskt nov–feb, dvs. 4 månader.</span></span>
@@ -858,34 +919,45 @@
               <span class="input-unit">kr/kW/mån</span>
             </div>
           </div>
-
+          <div class="section-summary" id="peak-summary" style="display:none;"></div>
         </div>
       </div>
 
       <hr class="divider">
-      <div class="panel-title">📈 Elarbitrage — köp billigt, använd dyrt</div>
+      <div class="panel-title">📈 Elarbitrage — köp billigt och använd elen när det är dyrt</div>
 
       <div class="checkwatt-box" style="background: linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%); border-color: #F5D878;">
-        <div class="cw-desc" style="margin-bottom:12px;">Batteriet laddas på natten när elpriset är lågt och används på dagen när priset är högt. Sätt prisskillnad till 0 om kunden inte har tidsvarierat pris.</div>
-        <div class="form-group" style="margin-bottom:12px;">
-          <label>Prisskillnad dag/natt
-            <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Skillnaden i kr/kWh mellan dyrt dagtid och billig nattel. Med rörligt spotpris och tidstariff kan skillnaden vara 30–80 öre/kWh. Sätt till 0 om kunden har fast pris.</span></span>
-            <span class="hint">typiskt 0,30–0,60 kr</span>
+        <div class="cw-header">
+          <div class="cw-label" style="color: #7A5200;">Aktivera elarbitrage?</div>
+          <label class="toggle">
+            <input type="checkbox" id="arb-toggle">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
           </label>
-          <div class="input-wrap">
-            <input type="number" id="arb-spread" value="0.50" step="0.05">
-            <span class="input-unit">kr/kWh</span>
-          </div>
         </div>
-        <div class="form-group" style="margin-bottom:0;">
-          <label>Antal arbitrage-dagar per år
-            <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många dagar per år batteriet kan utnyttja prisskillnaden. Vintern ger störst skillnad — använd t.ex. 120 dagar för en konservativ kalkyl eller 200+ för ett rörligt helårspris.</span></span>
-            <span class="hint">ex. 120 vinterdagar</span>
-          </label>
-          <div class="input-wrap">
-            <input type="number" id="arb-days" value="120" step="10">
-            <span class="input-unit">dagar/år</span>
+        <div class="cw-desc">Batteriet laddas på natten när elpriset är lågt och används på dagen när priset är högt.</div>
+        <div id="arb-rows" style="display:none; margin-top:14px;">
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Prisskillnad dag/natt
+              <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Skillnaden i kr/kWh mellan dyrt dagtid och billig nattel. Med rörligt spotpris och tidstariff kan skillnaden vara 30–80 öre/kWh.</span></span>
+              <span class="hint">typiskt 0,30–0,60 kr</span>
+            </label>
+            <div class="input-wrap">
+              <input type="number" id="arb-spread" value="0.50" step="0.05">
+              <span class="input-unit">kr/kWh</span>
+            </div>
           </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Antal arbitrage-dagar per år
+              <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många dagar per år batteriet kan utnyttja prisskillnaden. Vintern ger störst skillnad — t.ex. 120 dagar för en konservativ kalkyl.</span></span>
+              <span class="hint">ex. 120 vinterdagar</span>
+            </label>
+            <div class="input-wrap">
+              <input type="number" id="arb-days" value="120" step="10">
+              <span class="input-unit">dagar/år</span>
+            </div>
+          </div>
+          <div class="section-summary" id="arb-summary" style="display:none;"></div>
         </div>
       </div>
 
@@ -931,6 +1003,7 @@
               <span class="input-unit">kr/kWh</span>
             </div>
           </div>
+          <div class="section-summary" id="solar-summary" style="display:none; margin-top:12px;"></div>
         </div>
       </div>
 
@@ -1107,7 +1180,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Checkwatt toggle
   document.getElementById('cw-toggle').addEventListener('change', function() {
-    document.getElementById('cw-income-row').classList.toggle('active', this.checked);
+    document.getElementById('cw-income-row').style.display = this.checked ? 'block' : 'none';
+    calculate();
+  });
+
+  // Peak toggle
+  document.getElementById('peak-toggle').addEventListener('change', function() {
+    document.getElementById('peak-rows').style.display = this.checked ? 'block' : 'none';
     calculate();
   });
 
@@ -1116,7 +1195,11 @@ document.addEventListener("DOMContentLoaded", function() {
     calculate();
   });
 
-  // Arbitrage listeners
+  // Arbitrage toggle + listeners
+  document.getElementById('arb-toggle').addEventListener('change', function() {
+    document.getElementById('arb-rows').style.display = this.checked ? 'block' : 'none';
+    calculate();
+  });
   document.getElementById('arb-spread').addEventListener('input', calculate);
   document.getElementById('arb-days').addEventListener('input', calculate);
 
@@ -1157,15 +1240,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const cwIncome = cwEnabled ? (+document.getElementById('cw-income').value || 0) : 0;
 
     // Peak shaving: månader × kW × tariff/kW/månad
-    const peakMonths = +document.getElementById('peak-months').value || 0;
-    const peakKw = +document.getElementById('peak-kw').value || 0;
-    const peakTariff = +document.getElementById('peak-tariff').value || 0;
+    const peakEnabled = document.getElementById('peak-toggle').checked;
+    const peakMonths = peakEnabled ? (+document.getElementById('peak-months').value || 0) : 0;
+    const peakKw = peakEnabled ? (+document.getElementById('peak-kw').value || 0) : 0;
+    const peakTariff = peakEnabled ? (+document.getElementById('peak-tariff').value || 0) : 0;
     const peakSavingTotal = peakMonths * peakKw * peakTariff;
 
     // Elarbitrage: kWh/dag (usable capacity) × prisskillnad × dagar/år
-    const arbSpread = +document.getElementById('arb-spread').value || 0;
-    const arbDays = +document.getElementById('arb-days').value || 0;
-    // usableCapacity beräknas nedan, men vi behöver det här — beräkna direkt
+    const arbEnabled = document.getElementById('arb-toggle').checked;
+    const arbSpread = arbEnabled ? (+document.getElementById('arb-spread').value || 0) : 0;
+    const arbDays = arbEnabled ? (+document.getElementById('arb-days').value || 0) : 0;
     const arbCapacity = (+document.getElementById('capacity').value || 0) * (+document.getElementById('dod').value / 100);
     const arbSavingTotal = arbCapacity * arbSpread * arbDays;
 
@@ -1234,6 +1318,31 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('kpi-kwh-year').textContent = Math.round(kwhPerYear).toLocaleString('sv-SE') + ' kWh';
     document.getElementById('kpi-co2').textContent = co2.toLocaleString('sv-SE') + ' kg';
     document.getElementById('kpi-capacity-25').textContent = capacityAt25 + '%';
+
+    // Section summaries
+    const cwSum = document.getElementById('cw-summary');
+    if (cwEnabled && cwIncome > 0) {
+      cwSum.style.display = 'block';
+      cwSum.innerHTML = '➜ Checkwatt bidrar med <span>' + fmt(cwIncome) + '/år</span> i kalkylen';
+    } else { cwSum.style.display = 'none'; }
+
+    const peakSum = document.getElementById('peak-summary');
+    if (peakEnabled && peakSavingTotal > 0) {
+      peakSum.style.display = 'block';
+      peakSum.innerHTML = '➜ Effekttopp sparar <span>' + fmt(peakSavingTotal) + '/år</span> (' + peakMonths + ' mån × ' + peakKw + ' kW × ' + peakTariff + ' kr)';
+    } else { peakSum.style.display = 'none'; }
+
+    const arbSum = document.getElementById('arb-summary');
+    if (arbEnabled && arbSavingTotal > 0) {
+      arbSum.style.display = 'block';
+      arbSum.innerHTML = '➜ Elarbitrage ger <span>' + fmt(arbSavingTotal) + '/år</span> (' + arbCapacity.toFixed(1) + ' kWh × ' + arbSpread + ' kr × ' + arbDays + ' dagar)';
+    } else { arbSum.style.display = 'none'; }
+
+    const solarSum = document.getElementById('solar-summary');
+    if (solarEnabled && solarUpliftYear1 > 0) {
+      solarSum.style.display = 'block';
+      solarSum.innerHTML = '➜ Ökad egenanvändning ger <span>' + fmt(solarUpliftYear1) + '/år</span> (år 1)';
+    } else { solarSum.style.display = 'none'; }
 
     document.getElementById('warning-box').style.display = (!paybackYear) ? 'block' : 'none';
 
