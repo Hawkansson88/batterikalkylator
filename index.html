@@ -765,7 +765,7 @@
       <div class="form-group">
         <label>Antal cykler per dag<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många gånger batteriet laddas och laddas ur per dag. 1 cykel = laddas på natten, används på dagen. Med solceller kan du få 1–2 cykler per dag.</span></span><span class="hint" id="cycles-display">1</span></label>
         <div class="slider-wrap">
-          <input type="range" id="cycles" min="0.5" max="2" value="1" step="0.5">
+          <input type="range" id="cycles" min="0.1" max="3" value="1" step="0.1">
           <span class="slider-val" id="cycles-val">1</span>
         </div>
       </div>
@@ -859,6 +859,33 @@
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="panel-title">📈 Elarbitrage — köp billigt, använd dyrt</div>
+
+      <div class="checkwatt-box" style="background: linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%); border-color: #F5D878;">
+        <div class="cw-desc" style="margin-bottom:12px;">Batteriet laddas på natten när elpriset är lågt och används på dagen när priset är högt. Sätt prisskillnad till 0 om kunden inte har tidsvarierat pris.</div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label>Prisskillnad dag/natt
+            <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Skillnaden i kr/kWh mellan dyrt dagtid och billig nattel. Med rörligt spotpris och tidstariff kan skillnaden vara 30–80 öre/kWh. Sätt till 0 om kunden har fast pris.</span></span>
+            <span class="hint">typiskt 0,30–0,60 kr</span>
+          </label>
+          <div class="input-wrap">
+            <input type="number" id="arb-spread" value="0.50" step="0.05">
+            <span class="input-unit">kr/kWh</span>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Antal arbitrage-dagar per år
+            <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många dagar per år batteriet kan utnyttja prisskillnaden. Vintern ger störst skillnad — använd t.ex. 120 dagar för en konservativ kalkyl eller 200+ för ett rörligt helårspris.</span></span>
+            <span class="hint">ex. 120 vinterdagar</span>
+          </label>
+          <div class="input-wrap">
+            <input type="number" id="arb-days" value="120" step="10">
+            <span class="input-unit">dagar/år</span>
+          </div>
         </div>
       </div>
 
@@ -1037,7 +1064,7 @@
     </div>
     <div class="faq-item">
       <div class="faq-q">Behöver jag solceller för att ha ett batteri?</div>
-      <div class="faq-a">Nej! Batteriet kan laddas med billig natt­el från elnätet och sedan användas på dagen när priset är högt. Kombinationen med solceller ger störst effekt, men batteriet fungerar utmärkt helt fristående.<br><br>Däremot krävs solceller för att få <strong>grönt bidrag (skattereduktion)</strong> på el du matar in på nätet.* <br><br><em>* Grönt bidrag ges till privatpersoner som producerar och matar in förnybar el. Reglerna kan ändras — kontrollera alltid aktuella villkor hos Skatteverket.</em></div>
+      <div class="faq-a">Nej! Batteriet kan laddas med billig natt­el från elnätet och sedan användas på dagen när priset är högt. Kombinationen med solceller ger störst effekt, men batteriet fungerar utmärkt helt fristående.<br><br>Däremot krävs solceller för att få <strong>grönt bidrag (skattereduktion)</strong> på investeringskostnaden på batteriet (48,5%).* <br><br><em>* Grönt bidrag ges till privatpersoner. Reglerna kan ändras — kontrollera alltid aktuella villkor hos Skatteverket.</em></div>
     </div>
     <div class="faq-item">
       <div class="faq-q">Är kalkylen garanterad?</div>
@@ -1089,6 +1116,10 @@ document.addEventListener("DOMContentLoaded", function() {
     calculate();
   });
 
+  // Arbitrage listeners
+  document.getElementById('arb-spread').addEventListener('input', calculate);
+  document.getElementById('arb-days').addEventListener('input', calculate);
+
   // Solar toggle
   document.getElementById('solar-toggle').addEventListener('change', function() {
     document.getElementById('solar-rows').style.display = this.checked ? 'block' : 'none';
@@ -1131,6 +1162,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const peakTariff = +document.getElementById('peak-tariff').value || 0;
     const peakSavingTotal = peakMonths * peakKw * peakTariff;
 
+    // Elarbitrage: kWh/dag (usable capacity) × prisskillnad × dagar/år
+    const arbSpread = +document.getElementById('arb-spread').value || 0;
+    const arbDays = +document.getElementById('arb-days').value || 0;
+    // usableCapacity beräknas nedan, men vi behöver det här — beräkna direkt
+    const arbCapacity = (+document.getElementById('capacity').value || 0) * (+document.getElementById('dod').value / 100);
+    const arbSavingTotal = arbCapacity * arbSpread * arbDays;
+
     // Solar self-consumption uplift
     const solarEnabled = document.getElementById('solar-toggle').checked;
     const solarProd = solarEnabled ? (+document.getElementById('solar-prod').value || 0) : 0;
@@ -1168,7 +1206,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const savingElectricity = kwhThisYear * currentPrice;
       // Solar uplift: extra self-used kWh worth (importPrice - exportPrice) each
       const solarUplift = extraSelfKwh * (currentPrice - exportPrice);
-      const totalSaving = savingElectricity + cwIncome + (solarUplift > 0 ? solarUplift : 0) + peakSavingTotal;
+      const totalSaving = savingElectricity + cwIncome + (solarUplift > 0 ? solarUplift : 0) + peakSavingTotal + arbSavingTotal;
 
       // Without battery: cumulative cost of buying that energy
       cumulWithout += kwhThisYear * currentPrice;
@@ -1185,7 +1223,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // KPIs
     const solarUpliftYear1 = extraSelfKwh * (price - exportPrice);
-    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome + (solarUpliftYear1 > 0 ? solarUpliftYear1 : 0) + peakSavingTotal;
+    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome + (solarUpliftYear1 > 0 ? solarUpliftYear1 : 0) + peakSavingTotal + arbSavingTotal;
     const totalProfit = cost - withBattery[YEARS]; // how much below zero at end
     const capacityAt25 = (usableCapacity * Math.pow(1 - degradation, YEARS) / dod * 100).toFixed(0);
     const co2 = Math.round(kwhPerYear * 0.05); // approx 50g CO2/kWh Swedish grid
