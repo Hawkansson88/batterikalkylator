@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Batterikalkylator – Solenergi Norr</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -811,18 +812,55 @@
             <div class="toggle-thumb"></div>
           </label>
         </div>
-        <div class="cw-desc">Solenergi Norr är certifierad Checkwatt-partner. Sälj batterikapacitet till elnätet och tjäna extra pengar utöver elkostnadsbesparingen.</div>
+        <div class="cw-desc">Solenergi Norr är certifierad Checkwatt-partner. <strong>OBS:</strong> Ersättningen varierar över tid — historiskt 50–60 000 kr/år, men aktuell nivå är lägre. Ange det belopp som används i kalkylen nedan.</div>
         <div class="cw-income-row active" id="cw-income-row">
           <div class="form-group" style="margin-top:12px; margin-bottom:0;">
-            <label>Förväntad Checkwatt-intäkt per år<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Checkwatt låter dig hyra ut batterikapacitet till elnätet för att balansera strömmen. Du får betalt utan att göra något — allt sker automatiskt. Historisk intäkt: 50–60 000 kr/år.</span></span><span class="hint">hist. 50–60 000 kr</span></label>
+            <label>Checkwatt-intäkt i kalkylen<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Checkwatt låter dig hyra ut batterikapacitet till elnätet. Historisk intäkt: 50–60 000 kr/år — men aktuell ersättning är lägre. Sätt ett försiktigt värde; vi rekommenderar 10 000–20 000 kr/år baserat på senaste utfall.</span></span><span class="hint">sätt ett realistiskt värde</span></label>
             <div class="input-wrap">
-              <input type="number" id="cw-income" value="30000" step="1000">
+              <input type="number" id="cw-income" value="15000" step="1000">
               <span class="input-unit">kr</span>
             </div>
           </div>
         </div>
       </div>
 
+
+      <hr class="divider">
+      <div class="panel-title">⚡ Effekttopp — vinterbesparing</div>
+
+      <div class="checkwatt-box" style="background: linear-gradient(135deg, #EAF2FA 0%, #E8F5E9 100%); border-color: #B3D4E8;">
+        <div class="cw-desc" style="margin-bottom:12px;">Batteriet laddar under natten när elen är billig och kapar effekttoppar på morgon/kväll. Gäller kunder med effekttaxa — sätt månader till 0 om ej tillämpligt.</div>
+        <div id="peak-rows" style="margin-top:0;">
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Antal vintermånader med effekttaxa
+              <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Antalet månader per år där effekttoppen är kritisk — typiskt nov–feb, dvs. 4 månader.</span></span>
+            </label>
+            <div class="slider-wrap">
+              <input type="range" id="peak-months" min="1" max="6" value="4" step="1">
+              <span class="slider-val" id="peak-months-display">4 mån</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Effekt som kan kapas per månad
+              <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många kW batteriet hjälper till att kapa varje vintermånad. Typiskt 3–5 kW för ett normalt villabatteri.</span></span>
+            </label>
+            <div class="input-wrap">
+              <input type="number" id="peak-kw" value="4" step="0.5">
+              <span class="input-unit">kW</span>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Effekttariff per kW/månad
+              <span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Vad ditt elnätbolag tar betalt per kW effekttopp och månad. Varierar men ligger ofta kring 80–150 kr/kW och månad. Kolla din nätfaktura.</span></span>
+            </label>
+            <div class="input-wrap">
+              <input type="number" id="peak-tariff" value="120" step="10">
+              <span class="input-unit">kr/kW/mån</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
 
       <hr class="divider">
       <div class="panel-title">☀️ Solceller — egenanvändning</div>
@@ -999,7 +1037,7 @@
     </div>
     <div class="faq-item">
       <div class="faq-q">Behöver jag solceller för att ha ett batteri?</div>
-      <div class="faq-a">Nej! Batteriet kan laddas med billig natt­el från elnätet och sedan användas på dagen när priset är högt. Kombinationen med solceller ger störst effekt, men batteriet fungerar utmärkt helt fristående.</div>
+      <div class="faq-a">Nej! Batteriet kan laddas med billig natt­el från elnätet och sedan användas på dagen när priset är högt. Kombinationen med solceller ger störst effekt, men batteriet fungerar utmärkt helt fristående.<br><br>Däremot krävs solceller för att få <strong>grönt bidrag (skattereduktion)</strong> på el du matar in på nätet.* <br><br><em>* Grönt bidrag ges till privatpersoner som producerar och matar in förnybar el. Reglerna kan ändras — kontrollera alltid aktuella villkor hos Skatteverket.</em></div>
     </div>
     <div class="faq-item">
       <div class="faq-q">Är kalkylen garanterad?</div>
@@ -1046,6 +1084,11 @@ document.addEventListener("DOMContentLoaded", function() {
     calculate();
   });
 
+  document.getElementById('peak-months').addEventListener('input', function() {
+    document.getElementById('peak-months-display').textContent = this.value + ' mån';
+    calculate();
+  });
+
   // Solar toggle
   document.getElementById('solar-toggle').addEventListener('change', function() {
     document.getElementById('solar-rows').style.display = this.checked ? 'block' : 'none';
@@ -1081,6 +1124,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const degradation = +document.getElementById('degradation').value / 100;
     const cwEnabled = document.getElementById('cw-toggle').checked;
     const cwIncome = cwEnabled ? (+document.getElementById('cw-income').value || 0) : 0;
+
+    // Peak shaving: månader × kW × tariff/kW/månad
+    const peakMonths = +document.getElementById('peak-months').value || 0;
+    const peakKw = +document.getElementById('peak-kw').value || 0;
+    const peakTariff = +document.getElementById('peak-tariff').value || 0;
+    const peakSavingTotal = peakMonths * peakKw * peakTariff;
 
     // Solar self-consumption uplift
     const solarEnabled = document.getElementById('solar-toggle').checked;
@@ -1119,7 +1168,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const savingElectricity = kwhThisYear * currentPrice;
       // Solar uplift: extra self-used kWh worth (importPrice - exportPrice) each
       const solarUplift = extraSelfKwh * (currentPrice - exportPrice);
-      const totalSaving = savingElectricity + cwIncome + (solarUplift > 0 ? solarUplift : 0);
+      const totalSaving = savingElectricity + cwIncome + (solarUplift > 0 ? solarUplift : 0) + peakSavingTotal;
 
       // Without battery: cumulative cost of buying that energy
       cumulWithout += kwhThisYear * currentPrice;
@@ -1136,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // KPIs
     const solarUpliftYear1 = extraSelfKwh * (price - exportPrice);
-    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome + (solarUpliftYear1 > 0 ? solarUpliftYear1 : 0);
+    const saving1 = (usableCapacity * cycles * 365 * price) + cwIncome + (solarUpliftYear1 > 0 ? solarUpliftYear1 : 0) + peakSavingTotal;
     const totalProfit = cost - withBattery[YEARS]; // how much below zero at end
     const capacityAt25 = (usableCapacity * Math.pow(1 - degradation, YEARS) / dod * 100).toFixed(0);
     const co2 = Math.round(kwhPerYear * 0.05); // approx 50g CO2/kWh Swedish grid
@@ -1191,6 +1240,29 @@ document.addEventListener("DOMContentLoaded", function() {
             callbacks: {
               label: ctx => ' ' + ctx.dataset.label + ': ' + fmt(ctx.parsed.y)
             }
+          },
+          annotation: {
+            annotations: paybackYear ? {
+              paybackLine: {
+                type: 'line',
+                xMin: paybackYear,
+                xMax: paybackYear,
+                borderColor: '#4CAF50',
+                borderWidth: 2,
+                borderDash: [6, 3],
+                label: {
+                  display: true,
+                  content: '✓ Återbetald år ' + paybackYear,
+                  position: 'start',
+                  backgroundColor: '#4CAF50',
+                  color: 'white',
+                  font: { family: 'Outfit', size: 11, weight: '600' },
+                  padding: { x: 8, y: 5 },
+                  borderRadius: 5,
+                  yAdjust: 10
+                }
+              }
+            } : {}
           }
         },
         scales: {
