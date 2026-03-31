@@ -639,52 +639,192 @@
 
   /* PRINT */
   @media print {
-    /* Hide all interactive/nav elements */
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: white !important; font-size: 11pt; }
+
+    /* ── Hide all interactive & nav elements ── */
     .tab-nav, .no-print, .toggle, .tooltip-wrap,
     input[type="range"], input[type="number"], input[type="checkbox"],
-    .slider-wrap, .input-wrap, .form-group label .hint,
-    .print-btn { display: none !important; }
+    .slider-wrap, .input-wrap button,
+    .customer-type-wrap, .print-btn,
+    .cw-header, .cw-badge,
+    .form-group { display: none !important; }
 
-    /* Show all pages */
+    /* ── Show pages & pdf-only ── */
     .page { display: block !important; }
+    .pdf-only { display: block !important; }
 
-    /* Page breaks */
+    /* ── Page 1: kalkyl ── */
+    #page-kalkyl { page-break-after: always; }
+
+    /* ── Page 2: förklaring ── */
     #page-forklaring { page-break-before: always; }
-    .results-col { page-break-before: avoid; }
 
-    /* Colors */
-    header, .contact-strip, .kpi-card.highlight {
+    /* ── Header ── */
+    header {
+      background: #1A3A5C !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    body { background: white; }
+    .header-inner { padding: 12px 24px; }
+    .logo-wrap img { height: 40px; }
+    .sun-decor { display: none !important; }
 
-    /* Clean borders */
-    .panel, .kpi-card, .chart-panel, .explain-card, .explain-full {
+    /* ── Container: single column ── */
+    .container {
+      display: block !important;
+      padding: 16px 24px;
+      max-width: 100%;
+    }
+
+    /* ── Left panel: show as value summary ── */
+    .panel {
       box-shadow: none !important;
-      border: 1px solid #ccc !important;
+      border: 1px solid #ddd !important;
+      padding: 14px 16px;
+      margin-bottom: 12px;
       break-inside: avoid;
     }
+    .panel-title {
+      font-size: 0.75rem;
+      margin-bottom: 10px;
+    }
 
-    /* Hide toggled-off sections entirely */
+    /* ── Show input values as static text ── */
+    .input-wrap {
+      display: flex !important;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      color: #1A3A5C;
+      font-size: 0.9rem;
+    }
+    .input-wrap input[type="number"] {
+      display: inline !important;
+      border: none !important;
+      padding: 0 !important;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #1A3A5C;
+      background: transparent !important;
+      width: auto !important;
+      pointer-events: none;
+    }
+    .input-unit { font-size: 0.8rem; color: #6B7F93; }
+
+    .slider-wrap {
+      display: flex !important;
+      gap: 8px;
+      align-items: center;
+    }
+    .slider-wrap input[type="range"] { display: none !important; }
+    .slider-val {
+      font-weight: 600;
+      color: #1A3A5C;
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      display: block !important;
+      margin-bottom: 8px;
+    }
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: #6B7F93;
+      margin-bottom: 2px;
+      font-weight: 500;
+    }
+    .hint { display: none !important; }
+    .rot-row, .moms-row { font-size: 0.72rem; }
+
+    /* ── Toggle sections: hide if off ── */
     #cw-income-row[style*="display: none"],
     #peak-rows[style*="display: none"],
     #arb-rows[style*="display: none"],
     #solar-rows[style*="display: none"] { display: none !important; }
 
-    /* Show section summaries clearly */
-    .section-summary { display: block !important; }
-
-    /* Hide Checkwatt income input row in print — show only summary */
+    /* Checkwatt: hide form-group, show only summary */
+    #cw-income-row { display: block !important; }
     #cw-income-row .form-group { display: none !important; }
     #cw-income-row .section-summary { display: block !important; }
 
-    /* Layout: stack columns */
-    .container { grid-template-columns: 1fr !important; gap: 12px !important; }
-    .kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    /* Sections with toggle off — hide entire checkwatt-box */
+    .checkwatt-box { padding: 10px 12px; }
 
-    /* Hide panel-titles for sections that are off */
-    .checkwatt-box .cw-header { display: none !important; }
+    /* ── Section summaries ── */
+    .section-summary {
+      display: block !important;
+      margin-top: 8px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      border-left: 3px solid #2C5F8A;
+      background: #EAF2FA;
+    }
+
+    /* ── KPI grid ── */
+    .results-col { margin-top: 12px; }
+    .kpi-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .kpi-card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+      padding: 12px 8px;
+      text-align: center;
+      break-inside: avoid;
+    }
+    .kpi-card.highlight {
+      background: #1A3A5C !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .kpi-value { font-size: 1.1rem; }
+    .kpi-label { font-size: 0.65rem; }
+    .kpi-icon { font-size: 1rem; }
+
+    /* ── Chart ── */
+    .chart-panel {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+      padding: 12px;
+      break-inside: avoid;
+    }
+
+    /* ── Warning box ── */
+    .warning-box { font-size: 0.8rem; padding: 10px; }
+
+    /* ── Assumptions ── */
+    .assumptions { font-size: 0.72rem; padding: 10px 12px; }
+
+    /* ── Förklaringssidan ── */
+    .explain-container { padding: 16px 24px; }
+    .explain-hero h2 { font-size: 1.4rem; }
+    .explain-hero p { font-size: 0.88rem; }
+    .explain-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .explain-card, .explain-full {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+      padding: 14px;
+      break-inside: avoid;
+    }
+    .explain-card p, .explain-full p, .faq-a { font-size: 0.82rem; }
+    .contact-strip {
+      background: #1A3A5C !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 14px 18px;
+    }
+    .contact-strip a { color: #F5A623 !important; }
+    .cta-btn { display: none !important; }
   }
 
 
@@ -703,6 +843,47 @@
     font-weight: 700;
     color: var(--sky);
   }
+
+
+  /* KUNDTYP-VÄLJARE */
+  .customer-type-wrap {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .ctype-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .ctype-btn.active {
+    border-color: var(--sky);
+    background: var(--sky);
+    color: white;
+  }
+  .ctype-btn:hover:not(.active) {
+    border-color: var(--sky-mid);
+    color: var(--sky);
+  }
+  .rot-row { display: block; }
+  .moms-row { display: none; }
+  body.foretag .rot-row { display: none; }
+  body.foretag .moms-row { display: block; }
+
+  /* PDF PRINT PAGE */
+  @media print {
+    .pdf-only { display: block !important; }
+  }
+  .pdf-only { display: none; }
 
   /* TOOLTIPS */
   .tooltip-wrap {
@@ -790,12 +971,20 @@
     <div class="panel">
       <div class="panel-title">🔋 Batteriinvestering</div>
 
+      <div class="customer-type-wrap no-print">
+        <button class="ctype-btn active" id="btn-privat" onclick="setCustomerType('privat')">🏠 Privatperson</button>
+        <button class="ctype-btn" id="btn-foretag" onclick="setCustomerType('foretag')">🏢 Företag</button>
+      </div>
+      <div class="pdf-only" id="pdf-kundtyp" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:12px;"></div>
+
       <div class="form-group">
-        <label>Totalt pris inkl. installation <span class="hint">efter ROT om tillämpligt</span><span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Det totala priset du betalar för batteri och installation. ROT-avdrag (30%) kan dras av om du är privatperson — ange priset efter avdrag.</span></span></label>
+        <label>Totalt pris inkl. installation<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Det totala priset du betalar för batteri och installation. ROT-avdrag (30%) kan dras av om du är privatperson — ange priset efter avdrag.</span></span></label>
         <div class="input-wrap">
           <input type="number" id="cost" value="120000" step="5000">
           <span class="input-unit">kr</span>
         </div>
+        <div class="rot-row" style="margin-top:6px; font-size:0.78rem; color:var(--green);">✓ Som privatperson kan du göra ROT-avdrag (30%) — ange pris efter avdrag.</div>
+        <div class="moms-row" style="margin-top:6px; font-size:0.78rem; color:var(--text-muted);">ℹ️ Priser anges exkl. moms. Momsen (25%) är avdragsgill för momsregistrerade företag.</div>
       </div>
 
       <div class="form-group">
@@ -1440,6 +1629,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
   calculate();
+
+  function setCustomerType(type) {
+    document.body.classList.toggle('foretag', type === 'foretag');
+    document.getElementById('btn-privat').classList.toggle('active', type === 'privat');
+    document.getElementById('btn-foretag').classList.toggle('active', type === 'foretag');
+    const label = type === 'foretag' ? '🏢 Företag — priser exkl. moms' : '🏠 Privatperson — ROT-avdrag tillämpligt';
+    document.getElementById('pdf-kundtyp').textContent = label;
+  }
 
   function showTab(tab) {
     document.getElementById('page-kalkyl').classList.toggle('active', tab === 'kalkyl');
