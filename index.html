@@ -1003,13 +1003,7 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Antal cykler per dag<span class="tooltip-wrap"><span class="tooltip-icon">?</span><span class="tooltip-box">Hur många gånger batteriet laddas och laddas ur per dag. 1 cykel = laddas på natten, används på dagen. Med solceller kan du få 1–2 cykler per dag.</span></span><span class="hint" id="cycles-display">1</span></label>
-        <div class="slider-wrap">
-          <input type="range" id="cycles" min="0.1" max="3" value="1" step="0.1">
-          <span class="slider-val" id="cycles-val">1</span>
-        </div>
-      </div>
+      
 
       <hr class="divider">
       <div class="panel-title">⚡ Elpris & tariff</div>
@@ -1371,7 +1365,6 @@ document.addEventListener("DOMContentLoaded", function() {
     el.addEventListener('input', () => { val.textContent = el.value + suffix; calculate(); });
   }
   syncSlider('dod', 'dod-val', '%');
-  syncSlider('cycles', 'cycles-val', '');
   syncSlider('inflation', 'inflation-val', '%');
   syncSlider('degradation', 'degradation-val', '%');
 
@@ -1429,7 +1422,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const cost = +document.getElementById('cost').value || 0;
     const capacity = +document.getElementById('capacity').value || 0;
     const dod = +document.getElementById('dod').value / 100;
-    const cycles = +document.getElementById('cycles').value || 1;
+    const cycles = 1; // Fast värde — cykler hanteras via elarbitrage
     const price = +document.getElementById('price').value || 0;
     const inflation = +document.getElementById('inflation').value / 100;
     const degradation = +document.getElementById('degradation').value / 100;
